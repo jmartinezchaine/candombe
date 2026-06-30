@@ -40,12 +40,13 @@ class ControlsPanel extends StatelessWidget {
           ),
           child: Column(
             children: [
-              // Fila superior: Reproducción y Modos
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Botones de Play/Pause y Reset
-                  Row(
+              // Fila superior: Reproducción y Modos (Adaptable para móviles)
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isWide = constraints.maxWidth > 380;
+
+                  final playbackButtons = Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       // Play/Pause con efecto de resplandor
                       GestureDetector(
@@ -106,10 +107,9 @@ class ControlsPanel extends StatelessWidget {
                         icon: const Icon(Icons.refresh_rounded),
                       ),
                     ],
-                  ),
-                  
-                  // Selector de vista (Matriz vs Cascada)
-                  Container(
+                  );
+
+                  final viewSelector = Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: Colors.white.withOpacity(0.05),
@@ -117,6 +117,7 @@ class ControlsPanel extends StatelessWidget {
                       border: Border.all(color: Colors.white.withOpacity(0.05)),
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         _ViewTab(
                           label: 'Matriz',
@@ -132,8 +133,32 @@ class ControlsPanel extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
-                ],
+                  );
+
+                  if (isWide) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        playbackButtons,
+                        viewSelector,
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [playbackButtons],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [viewSelector],
+                        ),
+                      ],
+                    );
+                  }
+                },
               ),
               const SizedBox(height: 20),
               

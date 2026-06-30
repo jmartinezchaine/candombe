@@ -14,62 +14,73 @@ class RhythmMatrixView extends StatelessWidget {
       builder: (context, _) {
         final pattern = service.pattern;
         
-        return Column(
-          children: [
-            // Marcador de Pulsos (1, 2, 3, 4) en la parte superior
-            Padding(
-              padding: const EdgeInsets.only(left: 120.0, bottom: 8.0),
-              child: Row(
-                children: List.generate(4, (pulseIndex) {
-                  return Expanded(
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: Text(
-                        'PULSO ${pulseIndex + 1}',
-                        style: TextStyle(
-                          color: service.currentStep ~/ 4 == pulseIndex && service.isPlaying
-                              ? Colors.amber
-                              : Colors.white30,
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.0,
-                        ),
-                      ),
+        return SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          physics: const BouncingScrollPhysics(),
+          child: SizedBox(
+            width: 720,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Marcador de Pulsos (1, 2, 3, 4) en la parte superior
+                Padding(
+                  padding: const EdgeInsets.only(left: 130.0, bottom: 8.0),
+                  child: SizedBox(
+                    width: 582,
+                    child: Row(
+                      children: List.generate(4, (pulseIndex) {
+                        return Expanded(
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              'PULSO ${pulseIndex + 1}',
+                              style: TextStyle(
+                                color: service.currentStep ~/ 4 == pulseIndex && service.isPlaying
+                                    ? Colors.amber
+                                    : Colors.white30,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.0,
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
                     ),
-                  );
-                }),
-              ),
-            ),
-            
-            // Rejilla de instrumentos
-            ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: InstrumentType.values.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 16),
-              itemBuilder: (context, index) {
-                final instrumentType = InstrumentType.values[index];
-                final instPattern = pattern.instrumentPatterns[instrumentType]!;
+                  ),
+                ),
                 
-                return _InstrumentRow(
-                  instrumentPattern: instPattern,
-                  currentStep: service.isPlaying ? service.currentStep : -1,
-                  activePlaybackMeasureIndex: service.isPlaying 
-                      ? (service.playbackStates[instrumentType]?.currentMeasureIndex ?? 0)
-                      : -1,
-                  selectedEditMeasureIndex: service.getSelectedEditMeasureIndex(instrumentType),
-                  onCellTap: (stepIndex) => service.cycleHit(instrumentType, stepIndex),
-                  onMuteTap: () => service.toggleMute(instrumentType),
-                  onSoloTap: () => service.toggleSolo(instrumentType),
-                  onVolumeChanged: (volume) => service.setVolume(instrumentType, volume),
-                  onSelectEditMeasure: (mIndex) => service.setSelectedEditMeasureIndex(instrumentType, mIndex),
-                  onAddMeasure: () => service.addMeasure(instrumentType),
-                  onRemoveMeasure: (mIndex) => service.removeMeasure(instrumentType, mIndex),
-                  onSetMeasureRepetitions: (mIndex, repeats) => service.setMeasureRepetitions(instrumentType, mIndex, repeats),
-                );
-              },
+                // Rejilla de instrumentos
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: InstrumentType.values.length,
+                  separatorBuilder: (context, index) => const SizedBox(height: 16),
+                  itemBuilder: (context, index) {
+                    final instrumentType = InstrumentType.values[index];
+                    final instPattern = pattern.instrumentPatterns[instrumentType]!;
+                    
+                    return _InstrumentRow(
+                      instrumentPattern: instPattern,
+                      currentStep: service.isPlaying ? service.currentStep : -1,
+                      activePlaybackMeasureIndex: service.isPlaying 
+                          ? (service.playbackStates[instrumentType]?.currentMeasureIndex ?? 0)
+                          : -1,
+                      selectedEditMeasureIndex: service.getSelectedEditMeasureIndex(instrumentType),
+                      onCellTap: (stepIndex) => service.cycleHit(instrumentType, stepIndex),
+                      onMuteTap: () => service.toggleMute(instrumentType),
+                      onSoloTap: () => service.toggleSolo(instrumentType),
+                      onVolumeChanged: (volume) => service.setVolume(instrumentType, volume),
+                      onSelectEditMeasure: (mIndex) => service.setSelectedEditMeasureIndex(instrumentType, mIndex),
+                      onAddMeasure: () => service.addMeasure(instrumentType),
+                      onRemoveMeasure: (mIndex) => service.removeMeasure(instrumentType, mIndex),
+                      onSetMeasureRepetitions: (mIndex, repeats) => service.setMeasureRepetitions(instrumentType, mIndex, repeats),
+                    );
+                  },
+                ),
+              ],
             ),
-          ],
+          ),
         );
       },
     );

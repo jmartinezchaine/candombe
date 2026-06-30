@@ -14,7 +14,7 @@ void main() {
   final basicSuffix = '_basic';
   writeWav(File('${outDir.path}/madera$basicSuffix.wav'), generateSine(frequency: 900, durationMs: 100, volume: 0.6, decay: 45.0));
   writeWav(File('${outDir.path}/madera_accent$basicSuffix.wav'), generateSine(frequency: 1000, durationMs: 100, volume: 0.9, decay: 35.0));
-  writeWav(File('${outDir.path}/chico_mano$basicSuffix.wav'), generatePercussion(startFreq: 220, endFreq: 180, durationMs: 150, volume: 0.7, noiseMix: 0.12));
+  writeWav(File('${outDir.path}/chico_mano$basicSuffix.wav'), generatePercussion(startFreq: 340, endFreq: 300, durationMs: 50, volume: 0.65, noiseMix: 0.18));
   writeWav(File('${outDir.path}/chico_palo$basicSuffix.wav'), generatePercussion(startFreq: 340, endFreq: 240, durationMs: 150, volume: 0.95, noiseMix: 0.28));
   
   // Repique básico (no estaba en original, generado como sweeps coherentes)
@@ -202,29 +202,29 @@ List<double> generateMadera({required bool accented, required bool dry}) {
 // 2. Chico Mano (Toque sordo / tapado)
 List<double> generateChicoMano({required bool dry}) {
   const sampleRate = 44100;
-  final durationMs = dry ? 50 : 120; // Súper corto si es seco ("la" en "pa-la-ca")
+  final durationMs = dry ? 40 : 60; // Súper corto en ambos kits
   final numSamples = (sampleRate * (durationMs / 1000.0)).round();
   final samples = List<double>.filled(numSamples, 0.0);
 
-  final freq0 = 235.0;
+  final freq0 = 340.0; // Afinación más alta acorde al tambor chico
   final freq1 = freq0 * 1.5;
   final freq2 = freq0 * 2.4;
   
-  final decay = dry ? 95.0 : 35.0; // Drenado de resonancia masivo si es seco
+  final decay = dry ? 140.0 : 95.0; // Decay mucho más rápido para ser seco
   final volume = dry ? 0.65 : 0.75;
 
   final noiseSamples = generateWhiteNoise(numSamples);
-  final filteredNoise = lowPass(noiseSamples, dry ? 0.10 : 0.25); // Muy sordo si es seco
+  final filteredNoise = lowPass(noiseSamples, dry ? 0.08 : 0.15); // Filtro paso bajo para el sonido sordo de la mano
 
   for (int i = 0; i < numSamples; i++) {
     final t = i / sampleRate;
     final env = exp(-decay * t);
     
     final osc = dry
-        ? (sin(2 * pi * freq0 * t) * 0.9 + sin(2 * pi * freq1 * t) * 0.1)
-        : (sin(2 * pi * freq0 * t) * 0.7 + sin(2 * pi * freq1 * t) * 0.25 + sin(2 * pi * freq2 * t) * 0.05);
+        ? (sin(2 * pi * freq0 * t) * 0.95 + sin(2 * pi * freq1 * t) * 0.05)
+        : (sin(2 * pi * freq0 * t) * 0.8 + sin(2 * pi * freq1 * t) * 0.15 + sin(2 * pi * freq2 * t) * 0.05);
                 
-    final noiseEnv = exp(dry ? -180.0 * t : -120.0 * t);
+    final noiseEnv = exp(dry ? -220.0 * t : -160.0 * t);
     final noiseComponent = filteredNoise[i] * noiseEnv * (dry ? 0.22 : 0.15);
     
     samples[i] = (osc * env + noiseComponent) * volume;

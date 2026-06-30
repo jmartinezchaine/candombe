@@ -90,12 +90,12 @@ void main() {
     });
 
     test('Persistencia: Guardar, Crear, Cargar y Eliminar patrones', () async {
-      expect(sequencer.savedPatterns.length, equals(6));
+      expect(sequencer.savedPatterns.length, equals(10));
       expect(sequencer.savedPatterns.first.name, equals('Ansina Básico'));
 
       // Crear nuevo patrón
       await sequencer.createNewPattern('Mi Candombe');
-      expect(sequencer.savedPatterns.length, equals(7));
+      expect(sequencer.savedPatterns.length, equals(11));
       expect(sequencer.pattern.name, equals('Mi Candombe'));
       expect(sequencer.pattern.instrumentPatterns[InstrumentType.madera]!.steps[0], equals(HitType.silencio));
 
@@ -106,7 +106,7 @@ void main() {
       // Recargar desde SharedPreferences
       final anotherSequencer = SequencerService();
       await anotherSequencer.init();
-      expect(anotherSequencer.savedPatterns.length, equals(7));
+      expect(anotherSequencer.savedPatterns.length, equals(11));
       
       // Buscar el patrón guardado
       final loadedPattern = anotherSequencer.savedPatterns.firstWhere((p) => p.name == 'Mi Candombe');
@@ -114,12 +114,12 @@ void main() {
 
       // Duplicar/Guardar como
       await sequencer.saveCurrentPatternAs('Mi Candombe Copia');
-      expect(sequencer.savedPatterns.length, equals(8));
+      expect(sequencer.savedPatterns.length, equals(12));
       expect(sequencer.pattern.name, equals('Mi Candombe Copia'));
 
       // Eliminar
       await sequencer.deletePattern('Mi Candombe Copia');
-      expect(sequencer.savedPatterns.length, equals(7));
+      expect(sequencer.savedPatterns.length, equals(11));
       expect(sequencer.pattern.name, equals('Ansina Básico')); // Retorna al primero (Ansina Básico)
     });
 
@@ -129,7 +129,11 @@ void main() {
         'Jure Gularte Roll',
         'Jure Gularte Repicado',
         'Jure Martirena 3-3-2',
-        'Jure Martirena Signature'
+        'Jure Martirena Signature',
+        'Cachila Silva (Cuareim)',
+        'Wilson Martirena (Cuareim)',
+        'Sergio Ortuño (Ansina)',
+        'Perico Gularte Desplazado (Ansina)',
       ];
 
       for (final name in jurePatterns) {

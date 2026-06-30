@@ -424,6 +424,10 @@ class SequencerService extends ChangeNotifier {
         CandombePattern.jureGularteRepicado(),
         CandombePattern.jureMartirena332(),
         CandombePattern.jureMartirenaSignature(),
+        CandombePattern.cachilaSilvaCuareim(),
+        CandombePattern.wilsonMartirenaCuareim(),
+        CandombePattern.sergioOrtunoAnsina(),
+        CandombePattern.pericoGularteDesplazado(),
       ];
 
       if (patternStrings == null || patternStrings.isEmpty) {
@@ -533,7 +537,11 @@ class SequencerService extends ChangeNotifier {
       'Jure Gularte Roll',
       'Jure Gularte Repicado',
       'Jure Martirena 3-3-2',
-      'Jure Martirena Signature'
+      'Jure Martirena Signature',
+      'Cachila Silva (Cuareim)',
+      'Wilson Martirena (Cuareim)',
+      'Sergio Ortuño (Ansina)',
+      'Perico Gularte Desplazado (Ansina)',
     ];
     if (readOnlyNames.contains(name)) return; // No permitir eliminar los por defecto
     

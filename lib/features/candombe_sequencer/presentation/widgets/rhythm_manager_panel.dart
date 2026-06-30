@@ -179,7 +179,11 @@ class _RhythmManagerPanelState extends State<RhythmManagerPanel> {
           'Jure Gularte Roll',
           'Jure Gularte Repicado',
           'Jure Martirena 3-3-2',
-          'Jure Martirena Signature'
+          'Jure Martirena Signature',
+          'Cachila Silva (Cuareim)',
+          'Wilson Martirena (Cuareim)',
+          'Sergio Ortuño (Ansina)',
+          'Perico Gularte Desplazado (Ansina)',
         ];
         final isReadOnly = readOnlyNames.contains(currentPattern.name);
 
@@ -224,6 +228,7 @@ class _RhythmManagerPanelState extends State<RhythmManagerPanel> {
                     ),
                     child: DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
+                        isExpanded: true,
                         value: savedPatterns.any((p) => p.name == currentPattern.name) 
                             ? currentPattern.name 
                             : null,

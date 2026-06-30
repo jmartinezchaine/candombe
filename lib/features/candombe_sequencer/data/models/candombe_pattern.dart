@@ -487,6 +487,134 @@ class CandombePattern {
     );
   }
 
+  factory CandombePattern.cachilaSilvaCuareim() {
+    final maderaSteps = [
+      'MD*', '-', '-', 'MD', '-', '-', 'MD*', '-', '-', '-', 'MD*', '-', '-', 'MD*', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final chicoSteps = [
+      '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final repiqueSteps = [
+      'P', 'M', 'MT', 'P', 'P', 'M', 'MT', 'P', 'P', 'M', 'MT', 'P', '-', 'M', 'P', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final pianoSteps = [
+      'M', '-', '-', 'P', 'PA', '-', '-', '-', 'P', 'M*', 'P*', '-', 'PA', '-', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    return CandombePattern(
+      name: 'Cachila Silva (Cuareim)',
+      proyecto: 'Candombe Play',
+      estilo: 'Cuareim',
+      compas: '4/4',
+      subdivisiones: 16,
+      instrumentPatterns: {
+        InstrumentType.madera: InstrumentPattern(type: InstrumentType.madera, steps: maderaSteps),
+        InstrumentType.chico: InstrumentPattern(type: InstrumentType.chico, steps: chicoSteps),
+        InstrumentType.repique: InstrumentPattern(type: InstrumentType.repique, steps: repiqueSteps),
+        InstrumentType.piano: InstrumentPattern(type: InstrumentType.piano, steps: pianoSteps),
+      },
+    );
+  }
+
+  factory CandombePattern.wilsonMartirenaCuareim() {
+    final maderaSteps = [
+      'MD*', '-', '-', 'MD', '-', '-', 'MD*', '-', '-', '-', 'MD*', '-', '-', 'MD*', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final chicoSteps = [
+      '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final repiqueSteps = [
+      'P', 'M', 'MT', 'P', '-', '-', '-', '-', '-', '-', '-', '-', '-', 'M', 'P', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final pianoSteps = [
+      'M', '-', '-', 'P', 'PA', '-', '-', '-', 'P', 'M*', 'P*', '-', 'PA', '-', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    return CandombePattern(
+      name: 'Wilson Martirena (Cuareim)',
+      proyecto: 'Candombe Play',
+      estilo: 'Cuareim',
+      compas: '4/4',
+      subdivisiones: 16,
+      instrumentPatterns: {
+        InstrumentType.madera: InstrumentPattern(type: InstrumentType.madera, steps: maderaSteps),
+        InstrumentType.chico: InstrumentPattern(type: InstrumentType.chico, steps: chicoSteps),
+        InstrumentType.repique: InstrumentPattern(type: InstrumentType.repique, steps: repiqueSteps),
+        InstrumentType.piano: InstrumentPattern(type: InstrumentType.piano, steps: pianoSteps),
+      },
+    );
+  }
+
+  factory CandombePattern.sergioOrtunoAnsina() {
+    final maderaSteps = [
+      'MD*', '-', '-', 'MD', '-', '-', 'MD*', '-', '-', '-', 'MD*', '-', 'MD*', '-', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final chicoSteps = [
+      '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final repiqueSteps = [
+      'P', 'M', 'MT', 'P', 'M', 'P', 'P', 'M', 'P', 'P', 'M', 'P', '-', 'M', 'P', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final pianoSteps = [
+      'M', '-', '-', 'P', 'PA', '-', '-', '-', 'P', 'M*', 'P*', '-', 'PA', '-', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    return CandombePattern(
+      name: 'Sergio Ortuño (Ansina)',
+      proyecto: 'Candombe Play',
+      estilo: 'Ansina',
+      compas: '4/4',
+      subdivisiones: 16,
+      instrumentPatterns: {
+        InstrumentType.madera: InstrumentPattern(type: InstrumentType.madera, steps: maderaSteps),
+        InstrumentType.chico: InstrumentPattern(type: InstrumentType.chico, steps: chicoSteps),
+        InstrumentType.repique: InstrumentPattern(type: InstrumentType.repique, steps: repiqueSteps),
+        InstrumentType.piano: InstrumentPattern(type: InstrumentType.piano, steps: pianoSteps),
+      },
+    );
+  }
+
+  factory CandombePattern.pericoGularteDesplazado() {
+    final maderaSteps = [
+      'MD*', '-', '-', 'MD', '-', '-', 'MD*', '-', '-', '-', 'MD*', '-', 'MD*', '-', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final chicoSteps = [
+      '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P', '-', 'M*', 'P', 'P'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final repiqueSteps = [
+      'P', 'M', 'MT', 'P', '-', 'M', 'P', '-', 'P', 'M', 'MT', 'P', 'P', 'M', 'MT', 'P'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    final pianoSteps = [
+      'M', '-', '-', 'P', 'PA', '-', '-', '-', 'P', 'M*', 'P*', '-', 'PA', '-', '-', '-'
+    ].map(HitTypeExtension.fromCode).toList();
+
+    return CandombePattern(
+      name: 'Perico Gularte Desplazado (Ansina)',
+      proyecto: 'Candombe Play',
+      estilo: 'Ansina',
+      compas: '4/4',
+      subdivisiones: 16,
+      instrumentPatterns: {
+        InstrumentType.madera: InstrumentPattern(type: InstrumentType.madera, steps: maderaSteps),
+        InstrumentType.chico: InstrumentPattern(type: InstrumentType.chico, steps: chicoSteps),
+        InstrumentType.repique: InstrumentPattern(type: InstrumentType.repique, steps: repiqueSteps),
+        InstrumentType.piano: InstrumentPattern(type: InstrumentType.piano, steps: pianoSteps),
+      },
+    );
+  }
+
   // Genera un patrón en blanco
   factory CandombePattern.blank(String name) {
     return CandombePattern(

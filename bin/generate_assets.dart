@@ -25,7 +25,7 @@ void main() {
   writeWav(File('${outDir.path}/piano_mano$basicSuffix.wav'), generatePercussion(startFreq: 80, endFreq: 60, durationMs: 120, volume: 0.6, noiseMix: 0.03));
   writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 110, endFreq: 75, durationMs: 220, volume: 0.9, noiseMix: 0.18));
   writeWav(File('${outDir.path}/piano_palo_acento$basicSuffix.wav'), generatePercussion(startFreq: 120, endFreq: 80, durationMs: 230, volume: 0.98, noiseMix: 0.20));
-  writeWav(File('${outDir.path}/piano_apagado$basicSuffix.wav'), generatePercussion(startFreq: 95, endFreq: 75, durationMs: 100, volume: 0.75, noiseMix: 0.15));
+  writeWav(File('${outDir.path}/piano_apagado$basicSuffix.wav'), generatePercussion(startFreq: 85, endFreq: 65, durationMs: 120, volume: 0.75, noiseMix: 0.10));
 
   // ==========================================
   // 2. GENERAR KIT MODELADO FÍSICO BRILLANTE
@@ -441,18 +441,18 @@ List<double> generatePianoPalo({required bool accented, required bool dry}) {
 // Piano Apagado (PA - Palo Apagado: sordo apagado pero con fuerza y corte rápido)
 List<double> generatePianoApagado({required bool dry}) {
   const sampleRate = 44100;
-  final durationMs = dry ? 65 : 80;
+  final durationMs = dry ? 110 : 130; // Un poco más largo para que la onda grave complete ciclos
   final numSamples = (sampleRate * (durationMs / 1000.0)).round();
   final samples = List<double>.filled(numSamples, 0.0);
 
-  final freq0 = dry ? 55.0 : 80.0;
+  final freq0 = dry ? 52.0 : 65.0; // Más bajo/grave para evitar que suene agudo
   final freq1 = freq0 * 1.5;
   
-  final decay = dry ? 95.0 : 85.0; // Corte rapidísimo si es seco
-  final volume = 0.95;
+  final decay = dry ? 35.0 : 30.0; // Caída rápida pero no instantánea para mantener el golpe grave (thump)
+  final volume = 0.90;
 
   final noiseSamples = generateWhiteNoise(numSamples);
-  final filteredNoise = lowPass(noiseSamples, 0.12);
+  final filteredNoise = lowPass(noiseSamples, 0.08); // Filtrar más los agudos del ruido
 
   for (int i = 0; i < numSamples; i++) {
     final t = i / sampleRate;
@@ -461,11 +461,11 @@ List<double> generatePianoApagado({required bool dry}) {
     final osc = sin(2 * pi * freq0 * t) * 0.8 +
                 sin(2 * pi * freq1 * t) * 0.2;
                 
-    final noiseEnv = exp(-180.0 * t);
-    final noiseComponent = filteredNoise[i] * noiseEnv * 0.25;
+    final noiseEnv = exp(-120.0 * t);
+    final noiseComponent = filteredNoise[i] * noiseEnv * 0.15;
     
-    final clickEnv = exp(-300.0 * t);
-    final click = sin(2 * pi * 350.0 * t) * clickEnv * 0.35;
+    final clickEnv = exp(-250.0 * t);
+    final click = sin(2 * pi * 220.0 * t) * clickEnv * 0.20; // Click de palo más grave y sutil
     
     samples[i] = (osc * env + click + noiseComponent) * volume;
   }

@@ -23,8 +23,8 @@ void main() {
   writeWav(File('${outDir.path}/repique_tapado$basicSuffix.wav'), generatePercussion(startFreq: 350, endFreq: 300, durationMs: 80, volume: 0.8, noiseMix: 0.35));
 
   writeWav(File('${outDir.path}/piano_mano$basicSuffix.wav'), generatePercussion(startFreq: 80, endFreq: 60, durationMs: 120, volume: 0.6, noiseMix: 0.03));
-  writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 100, endFreq: 60, durationMs: 400, volume: 0.9, noiseMix: 0.12));
-  writeWav(File('${outDir.path}/piano_palo_acento$basicSuffix.wav'), generatePercussion(startFreq: 110, endFreq: 55, durationMs: 450, volume: 0.98, noiseMix: 0.15));
+  writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 90, endFreq: 55, durationMs: 420, volume: 0.9, noiseMix: 0.10));
+  writeWav(File('${outDir.path}/piano_palo_acento$basicSuffix.wav'), generatePercussion(startFreq: 95, endFreq: 50, durationMs: 480, volume: 0.98, noiseMix: 0.12));
   writeWav(File('${outDir.path}/piano_apagado$basicSuffix.wav'), generatePercussion(startFreq: 85, endFreq: 65, durationMs: 120, volume: 0.75, noiseMix: 0.10));
 
   // ==========================================
@@ -423,14 +423,21 @@ List<double> generatePianoPalo({required bool accented, required bool dry}) {
     final t = i / sampleRate;
     final env = exp(-decay * t);
     
-    final osc = sin(2 * pi * freq0 * t) * 0.75 +
-                sin(2 * pi * freq1 * t) * 0.15 +
-                sin(2 * pi * freq2 * t) * 0.1;
+    // Implementar pitch sweep (desplazamiento de frecuencia) para simular el estiramiento del parche al golpear fuerte
+    final slideAmt = accented ? 22.0 : 10.0;
+    final slideDecay = 45.0;
+    final phase0 = 2 * pi * (freq0 * t - (slideAmt / slideDecay) * (exp(-slideDecay * t) - 1.0));
+    final phase1 = 2 * pi * (freq1 * t - ((slideAmt * 1.5) / slideDecay) * (exp(-slideDecay * t) - 1.0));
+    final phase2 = 2 * pi * (freq2 * t - ((slideAmt * 2.1) / slideDecay) * (exp(-slideDecay * t) - 1.0));
+
+    final osc = sin(phase0) * 0.75 +
+                sin(phase1) * 0.15 +
+                sin(phase2) * 0.1;
                 
-    final clickDecay = accented ? 180.0 : 220.0;
+    final clickDecay = accented ? 280.0 : 220.0; // Caída más rápida en el acento para evitar sonido agudo sostenido
     final clickEnv = exp(-clickDecay * t);
-    final clickFreq = accented ? 580.0 : 480.0; // Click de madera más gordo y bajo
-    final click = sin(2 * pi * clickFreq * t) * clickEnv * (accented ? 0.35 : 0.22);
+    final clickFreq = accented ? 420.0 : 480.0; // Click más grave y gordo en el acento (420Hz vs 480Hz)
+    final click = sin(2 * pi * clickFreq * t) * clickEnv * (accented ? 0.45 : 0.22);
     final noiseComponent = filteredNoise[i] * clickEnv * (accented ? 0.15 : 0.10);
     
     samples[i] = (osc * env + click + noiseComponent) * volume;

@@ -24,9 +24,9 @@ class RhythmMatrixView extends StatelessWidget {
               children: [
                 // Marcador de Pulsos (1, 2, 3, 4) en la parte superior
                 Padding(
-                  padding: const EdgeInsets.only(left: 130.0, bottom: 8.0),
+                  padding: const EdgeInsets.only(left: 80.0, bottom: 8.0),
                   child: SizedBox(
-                    width: 582,
+                    width: 632,
                     child: Row(
                       children: List.generate(4, (pulseIndex) {
                         return Expanded(
@@ -129,6 +129,220 @@ class _InstrumentRow extends StatelessWidget {
     }
   }
 
+  void _showSettingsDialog(BuildContext context) {
+    final service = SequencerService();
+    final instrumentColor = _getInstrumentColor();
+    
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ListenableBuilder(
+          listenable: service,
+          builder: (context, _) {
+            final pattern = service.pattern.instrumentPatterns[instrumentPattern.type]!;
+            
+            return Dialog(
+              backgroundColor: const Color(0xFF1E1E1E),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+                side: BorderSide(
+                  color: Colors.white.withOpacity(0.08),
+                  width: 1.5,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Encabezado
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              width: 14,
+                              height: 14,
+                              decoration: BoxDecoration(
+                                color: instrumentColor,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            Text(
+                              instrumentPattern.type.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          ],
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.close_rounded, color: Colors.white60),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    
+                    // Controles Mute / Solo
+                    Row(
+                      children: [
+                        // Mute
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: onMuteTap,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: pattern.isMuted
+                                    ? Colors.red.withOpacity(0.2)
+                                    : Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: pattern.isMuted
+                                      ? Colors.red.withOpacity(0.6)
+                                      : Colors.white.withOpacity(0.1),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    pattern.isMuted
+                                        ? Icons.volume_off_rounded
+                                        : Icons.volume_up_rounded,
+                                    color: pattern.isMuted ? Colors.red : Colors.white60,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'SILENCIAR',
+                                    style: TextStyle(
+                                      color: pattern.isMuted ? Colors.red : Colors.white60,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        // Solo
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: onSoloTap,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              decoration: BoxDecoration(
+                                color: pattern.isSoloed
+                                    ? Colors.amber.withOpacity(0.2)
+                                    : Colors.white.withOpacity(0.05),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: pattern.isSoloed
+                                      ? Colors.amber.withOpacity(0.6)
+                                      : Colors.white.withOpacity(0.1),
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    pattern.isSoloed
+                                        ? Icons.star_rounded
+                                        : Icons.star_border_rounded,
+                                    color: pattern.isSoloed ? Colors.amber : Colors.white60,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    'SOLO',
+                                    style: TextStyle(
+                                      color: pattern.isSoloed ? Colors.amber : Colors.white60,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 24),
+                    
+                    // Volumen
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'VOLUMEN',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        Text(
+                          '${(pattern.volume * 100).toInt()}%',
+                          style: TextStyle(
+                            color: instrumentColor,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.volume_down_rounded,
+                          size: 18,
+                          color: pattern.isMuted ? Colors.white24 : Colors.white60,
+                        ),
+                        Expanded(
+                          child: SliderTheme(
+                            data: SliderThemeData(
+                              trackHeight: 4.0,
+                              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                              overlayShape: const RoundSliderOverlayShape(overlayRadius: 16.0),
+                              activeTrackColor: instrumentColor,
+                              inactiveTrackColor: Colors.white.withOpacity(0.08),
+                              thumbColor: instrumentColor,
+                              overlayColor: instrumentColor.withOpacity(0.12),
+                            ),
+                            child: Slider(
+                              value: pattern.volume,
+                              min: 0.0,
+                              max: 1.0,
+                              onChanged: pattern.isMuted ? null : onVolumeChanged,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.volume_up_rounded,
+                          size: 18,
+                          color: pattern.isMuted ? Colors.white24 : Colors.white60,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final instrumentColor = _getInstrumentColor();
@@ -149,113 +363,83 @@ class _InstrumentRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Columna Izquierda: Encabezado del Instrumento
-          SizedBox(
-            width: 110,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  instrumentPattern.type.name.split(' ')[0], // Solo el nombre base
-                  style: TextStyle(
-                    color: instrumentPattern.isMuted 
-                        ? Colors.white24 
-                        : Colors.white.withOpacity(0.9),
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
+          // Columna Izquierda: Encabezado del Instrumento Simplificado y Clickeable
+          GestureDetector(
+            onTap: () => _showSettingsDialog(context),
+            child: Container(
+              width: 60,
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.03),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.06),
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Nombre abreviado
+                  Text(
+                    instrumentPattern.type.name.split(' ')[0].substring(0, 3).toUpperCase(),
+                    style: TextStyle(
+                      color: instrumentPattern.isMuted 
+                          ? Colors.white24 
+                          : instrumentColor,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    // Botón Mute (M)
-                    GestureDetector(
-                      onTap: onMuteTap,
+                  const SizedBox(height: 8),
+                  // Indicadores de estado Mute/Solo
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (instrumentPattern.isMuted)
+                        const Icon(
+                          Icons.volume_off_rounded,
+                          size: 11,
+                          color: Colors.red,
+                        )
+                      else if (instrumentPattern.isSoloed)
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 11,
+                          color: Colors.amber,
+                        )
+                      else
+                        Icon(
+                          Icons.volume_up_rounded,
+                          size: 11,
+                          color: Colors.white.withOpacity(0.5),
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  // Barra de volumen pequeña horizontal
+                  Container(
+                    width: 32,
+                    height: 3,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                    child: FractionallySizedBox(
+                      alignment: Alignment.centerLeft,
+                      widthFactor: instrumentPattern.volume,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                         decoration: BoxDecoration(
-                          color: instrumentPattern.isMuted
-                              ? Colors.red.withOpacity(0.2)
-                              : Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: instrumentPattern.isMuted
-                                ? Colors.red.withOpacity(0.6)
-                                : Colors.white.withOpacity(0.1),
-                          ),
-                        ),
-                        child: Text(
-                          'MUTE',
-                          style: TextStyle(
-                            color: instrumentPattern.isMuted ? Colors.red : Colors.white54,
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          color: instrumentPattern.isMuted 
+                              ? Colors.white24 
+                              : instrumentColor,
+                          borderRadius: BorderRadius.circular(2),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    // Botón Solo (S)
-                    GestureDetector(
-                      onTap: onSoloTap,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: instrumentPattern.isSoloed
-                              ? Colors.amber.withOpacity(0.2)
-                              : Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
-                            color: instrumentPattern.isSoloed
-                                ? Colors.amber.withOpacity(0.6)
-                                : Colors.white.withOpacity(0.1),
-                          ),
-                        ),
-                        child: Text(
-                          'SOLO',
-                          style: TextStyle(
-                            color: instrumentPattern.isSoloed ? Colors.amber : Colors.white54,
-                            fontSize: 8,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.volume_up_rounded,
-                      size: 11,
-                      color: instrumentPattern.isMuted ? Colors.white24 : Colors.white54,
-                    ),
-                    Expanded(
-                      child: SizedBox(
-                        height: 16,
-                        child: SliderTheme(
-                          data: SliderThemeData(
-                            trackHeight: 2.0,
-                            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 4.0),
-                            overlayShape: const RoundSliderOverlayShape(overlayRadius: 8.0),
-                            activeTrackColor: instrumentColor,
-                            inactiveTrackColor: Colors.white.withOpacity(0.06),
-                            thumbColor: instrumentColor,
-                            overlayColor: instrumentColor.withOpacity(0.12),
-                          ),
-                          child: Slider(
-                            value: instrumentPattern.volume,
-                            min: 0.0,
-                            max: 1.0,
-                            onChanged: instrumentPattern.isMuted ? null : onVolumeChanged,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
           

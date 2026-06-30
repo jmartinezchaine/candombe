@@ -624,9 +624,9 @@ class _InstrumentRow extends StatelessWidget {
                         children: [
                           if (isPulseStart && stepIndex > 0)
                             Container(
-                              width: 2,
+                              width: 1.5,
                               height: 32,
-                              color: Colors.white10,
+                              color: Colors.white12,
                             ),
                           Expanded(
                             child: Padding(
@@ -638,6 +638,7 @@ class _InstrumentRow extends StatelessWidget {
                                 isMuted: instrumentPattern.isMuted,
                                 onTap: () => onCellTap(stepIndex),
                                 isAlternateBeat: isAlternateBeat,
+                                isBeatStart: isPulseStart,
                               ),
                             ),
                           ),
@@ -662,6 +663,7 @@ class _CellWidget extends StatelessWidget {
   final bool isMuted;
   final VoidCallback onTap;
   final bool isAlternateBeat;
+  final bool isBeatStart;
 
   const _CellWidget({
     required this.hit,
@@ -670,6 +672,7 @@ class _CellWidget extends StatelessWidget {
     required this.isMuted,
     required this.onTap,
     required this.isAlternateBeat,
+    required this.isBeatStart,
   });
 
   @override
@@ -679,11 +682,13 @@ class _CellWidget extends StatelessWidget {
 
     // Colores basados en el golpe y en si es un pulso par/impar
     Color cellBgColor = isEmpty
-        ? (isAlternateBeat ? Colors.white.withOpacity(0.045) : Colors.white.withOpacity(0.015))
+        ? (isAlternateBeat ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.01))
         : Colors.transparent;
         
     Color borderCol = isEmpty
-        ? (isAlternateBeat ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.02))
+        ? (isBeatStart
+            ? Colors.white.withOpacity(0.18)
+            : (isAlternateBeat ? Colors.white.withOpacity(0.06) : Colors.white.withOpacity(0.02)))
         : Colors.white.withOpacity(0.06);
         
     double borderWidth = 1.0;
@@ -736,10 +741,12 @@ class _CellWidget extends StatelessWidget {
         child: Center(
           child: isEmpty
               ? Container(
-                  width: 4,
-                  height: 4,
+                  width: isBeatStart ? 6 : 4,
+                  height: isBeatStart ? 6 : 4,
                   decoration: BoxDecoration(
-                    color: isCurrent ? Colors.white70 : Colors.white10,
+                    color: isCurrent 
+                        ? Colors.white70 
+                        : (isBeatStart ? Colors.white.withOpacity(0.35) : Colors.white10),
                     shape: BoxShape.circle,
                   ),
                 )

@@ -202,23 +202,62 @@ class _SequencerPageState extends State<SequencerPage> {
             ],
           ),
           
-          // Badge del compás
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.06),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: Colors.white.withOpacity(0.08)),
-            ),
-            child: const Text(
-              '4 / 4',
-              style: TextStyle(
-                color: Colors.amber,
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                letterSpacing: 1.0,
-              ),
-            ),
+          // Metrónomo Visual (reemplaza el 4/4 estático)
+          AnimatedBuilder(
+            animation: SequencerService(),
+            builder: (context, _) {
+              final service = SequencerService();
+              final isPlaying = service.isPlaying;
+              final currentBeat = isPlaying ? (service.currentStep ~/ 4) : -1;
+              
+              return Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.white.withOpacity(0.08)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '4/4',
+                      style: TextStyle(
+                        color: isPlaying ? Colors.white30 : Colors.amber,
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Row(
+                      children: List.generate(4, (index) {
+                        final isActive = isPlaying && currentBeat == index;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2.0),
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: isActive 
+                                ? Colors.amber 
+                                : Colors.white.withOpacity(0.15),
+                            boxShadow: isActive
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.amber.withOpacity(0.6),
+                                      blurRadius: 6,
+                                      spreadRadius: 1,
+                                    )
+                                  ]
+                                : null,
+                          ),
+                        );
+                      }),
+                    ),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),

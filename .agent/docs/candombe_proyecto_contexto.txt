@@ -1,0 +1,132 @@
+Proyecto Candombe: Especificaciones Técnicas
+Documento de Inicialización de Contexto para Desarrollo de Software
+Métrica de Referencia: Ansina (Palermo) • Formato de Entrada para Modelos de IA
+
+
+
+
+  1. Objetivos del Proyecto
+El propósito de este proyecto es desarrollar una aplicación interactiva de aprendizaje y práctica musical
+diseñada específicamente para comparsas de candombe, con foco inicial en el estilo y toque de Ansina
+(Palermo). La herramienta permitirá a los tamborileros estudiar de forma global (el ensamble completo de la
+cuerda) e individual (aislando cada instrumento), facilitando el aprendizaje sin requerir conocimientos previos
+de lectura musical tradicional (pentagrama).
+
+El desarrollo abarcará las distintas estructuras del toque callejero: la entrada (comienzo), la base (marcha
+regular), el ecosistema del corte (llamado, fraseo/estribillo y salida/retome), y la salida (finalización),
+soportando tanto la métrica regular en 4/4 como la transición rítmica hacia el afro en 6/8.
+
+
+  2. Sistema de Notación Rítmica Adaptado
+Para sustituir la partitura clásica se define un sistema de codificación de una y dos letras optimizado para
+lectura rápida en pantalla y procesamiento ágil en bases de datos (formato de texto plano/JSON):
+
+  • M (Mano Abierta): Golpe natural con la mano libre, permitiendo la resonancia completa del parche.
+  • MT (Mano Tapada): Golpe "quemado" o seco, donde la palma apaga la vibración inmediatamente de
+   forma percutiva.
+  • P (Palo Abierto): Golpe limpio con la baqueta (palo) sobre el parche, permitiendo su vibración libre.
+  • PA (Palo Apagado): Golpe seco de baqueta donde el parche es simultáneamente ahogado o presionado
+   con la otra mano para cortar el sustain.
+  • MD (Madera): Golpe directo del palo sobre la caja, armazón o madera lateral del tambor, estableciendo la
+   clave rítmica.
+  • - (Silencio): Unidad de tiempo vacía donde el pulso avanza pero no se ejecuta ninguna acción percutiva
+   (esencial para el swing).
+
+
+   Modificador de Intención (Acento): El símbolo asterisco (*) sufijado a cualquier código (ej. M*, P*,
+   MD*) denota un golpe acentuado con mayor intención dinámica. Visualmente en la interfaz, esto se
+   traducirá en variaciones de tamaño, peso tipográfico o color.
+
+
+
+  3. Matriz de la Base Tradicional de Ansina (Compás 4/4)
+La base rítmica se estructura en una cuadrícula lineal de un compás de 4/4, subdividido en 16 celdas
+equivalentes a semicorcheas. Cada pulso o tiempo de caminata contiene exactamente 4 subdivisiones.
+
+
+
+Proyecto Candombe - Especificaciones Técnicas                                                       Página 1 de 3
+                                Pulso 1                      Pulso 2                Pulso 3              Pulso 4
+     Instrumento
+                          1       2    3        4   1    2        3    4    1   2       3     4     1      2       3   4
+
+ Madera (Clave
+                         MD*      -    -     MD     -    -      MD*    MD   -   -     MD*     MD   MD*      -      -   -
+ 3-2)
+
+ Chico (Motor)            -      M*    P        P   -    M*       P    P    -   M*      P     P     -      M*      P   P
+
+ Piano (Ansina)           M       -    -        P   PA   -        -    -    P   M*     P*     -    PA       -      -   -
+
+
+Análisis del Engranaje Rítmico para el Modelo de IA
+
+1. Contrapunto del Pulso 1: El Piano inicia a tierra con Mano (M), coincidiendo con el acento de Madera
+   (MD*) mientras el Chico hace silencio (-). En la subdivisión 4, Madera, Chico y Piano confluyen en un
+   golpe unificado de Palo que empuja la marcha.
+2. Anclaje del Pulso 2: El Piano ejecuta un Palo Apagado (PA) seco a tierra, rellenando el vacío del Chico y
+   anticipando el golpe sincopado de la Madera en la subdivisión 3.
+3. Bloque Crítico del Pulso 3: Sincronización perfecta en la subdivisión 2: la mano acentuada del Chico
+   (M*) cae en simultáneo con la mano acentuada del Piano (M*). Inmediatamente en la subdivisión 3, el
+   Piano remata con Palo Acentuado (P*) al unísono con el Palo del Chico y el acento de la Madera.
+4. El Vaciado del Pulso 4 (Ancla): El Piano cae con un Palo Apagado (PA) a tierra coincidiendo con el
+   golpe de Madera (MD*). Luego, el Piano enmudece por completo el resto del pulso, liberando espacio
+   acústico para que la Madera limpie la resolución de la clave antes de reiniciar el ciclo.
+
+
+  4. Arquitectura de Software y Lógica del Secuenciador
+
+Motor de Audio (Manejo del Tempo)
+
+Para evitar rigidez matemática y capturar el swing real, el motor leerá muestras de audio cortas
+(archivos .wav de alta fidelidad con ataque inmediato) correspondientes a cada golpe grabado de
+instrumentos reales. El temporizador calculará la duración de reproducción de cada una de las 16 celdas
+basándose en la configuración de BPM (Beats Per Minute) seleccionada por el usuario.
+
+Fórmulas matemáticas para el reloj del secuenciador:
+
+                                           Tpulso = 60000 / BPM (en milisegundos)
+                                   Tcelda = Tpulso / 4 = 15000 / BPM (en milisegundos)
+
+Ejemplo operativo para Tempo de Calle (90 BPM):
+Tpulso = 60000 / 90 = 666.67 ms
+Tcelda = 666.67 / 4 = 166.67 ms (intervalo exacto entre disparos de audio).
+
+
+
+
+Proyecto Candombe - Especificaciones Técnicas                                                              Página 2 de 3
+Esquema JSON Esperado para Carga de Datos
+
+   {
+       "proyecto": "Candombe Play",
+       "estilo": "Ansina",
+       "compas": "4/4",
+       "subdivisiones": 16,
+       "patron_base": {
+           "madera": ["MD*", "-", "-", "MD", "-", "-", "MD*", "MD", "-", "-", "MD*", "MD", "MD*",
+   "-", "-", "-"],
+           "chico":   ["-", "M*", "P", "P", "-", "M*", "P", "P", "-", "M*", "P", "P", "-", "M*",
+   "P", "P"],
+           "piano":   ["M", "-", "-", "P", "PA", "-", "-", "-", "P", "M*", "P*", "-", "PA", "-",
+   "-", "-"]
+       }
+   }
+
+
+
+
+  5. Diseños de Interfaz Sugeridos (UI/UX)
+  • Vista Lineal (Matriz de Ritmo): Representación gráfica en celdas horizontales idéntica a la matriz técnica
+   de este documento. Un cursor lumínico vertical se desplaza a la velocidad del tempo. Permite activar/
+   desactivar celdas (mutear capas de otros tambores) para que el alumno toque su parte sobre la base del
+   resto de la cuerda.
+  • Vista Cascada (Tipo "Guitar Hero"): Los símbolos rítmicos descienden verticalmente hacia una línea de
+   impacto situada en la base de la pantalla. Este formato facilita la preparación motriz intuitiva del golpe,
+   permitiendo al tamborilero anticipar visualmente si viene un movimiento de mano, de palo o un silencio.
+
+
+
+
+Proyecto Candombe - Especificaciones Técnicas                                                          Página 3 de 3
+

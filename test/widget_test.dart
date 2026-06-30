@@ -1,30 +1,29 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:candombe/main.dart';
+import 'package:candombe/features/candombe_sequencer/presentation/pages/sequencer_page.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Candombe Play setup smoke test', (WidgetTester tester) async {
+    // Inicializar SharedPreferences mock
+    SharedPreferences.setMockInitialValues({});
+
+    // Construir la app y disparar un frame
     await tester.pumpWidget(const MyApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verificar que se muestra la pantalla de carga inicial o la página principal
+    expect(find.byType(SequencerPage), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Permitir que finalicen las inicializaciones asíncronas simuladas
+    await tester.pumpAndSettle();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verificar que el título del proyecto y el estilo se muestran correctamente
+    expect(find.textContaining('Candombe Play'), findsOneWidget);
+    expect(find.text('Ansina - Ansina Básico'), findsOneWidget);
+
+    // Verificar que se muestran los controles básicos (Matriz / Cascada)
+    expect(find.text('Matriz'), findsOneWidget);
+    expect(find.text('Cascada'), findsOneWidget);
   });
 }

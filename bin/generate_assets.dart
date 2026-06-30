@@ -22,7 +22,7 @@ void main() {
   writeWav(File('${outDir.path}/repique_palo$basicSuffix.wav'), generatePercussion(startFreq: 280, endFreq: 200, durationMs: 150, volume: 0.85, noiseMix: 0.25));
   writeWav(File('${outDir.path}/repique_tapado$basicSuffix.wav'), generatePercussion(startFreq: 350, endFreq: 300, durationMs: 80, volume: 0.8, noiseMix: 0.35));
 
-  writeWav(File('${outDir.path}/piano_mano$basicSuffix.wav'), generatePercussion(startFreq: 80, endFreq: 60, durationMs: 250, volume: 0.85, noiseMix: 0.05));
+  writeWav(File('${outDir.path}/piano_mano$basicSuffix.wav'), generatePercussion(startFreq: 80, endFreq: 60, durationMs: 120, volume: 0.6, noiseMix: 0.03));
   writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 110, endFreq: 75, durationMs: 220, volume: 0.9, noiseMix: 0.18));
   writeWav(File('${outDir.path}/piano_palo_acento$basicSuffix.wav'), generatePercussion(startFreq: 120, endFreq: 80, durationMs: 230, volume: 0.98, noiseMix: 0.20));
   writeWav(File('${outDir.path}/piano_apagado$basicSuffix.wav'), generatePercussion(startFreq: 95, endFreq: 75, durationMs: 100, volume: 0.75, noiseMix: 0.15));
@@ -367,22 +367,22 @@ List<double> generateRepiqueTapado({required bool dry}) {
   return normalize(samples, volume);
 }
 
-// 4. Piano Mano (Sonido de graves profundos y cálidos)
+// 4. Piano Mano (Sonido de graves profundos y cálidos - sutil y apagado)
 List<double> generatePianoMano({required bool dry}) {
   const sampleRate = 44100;
-  final durationMs = dry ? 350 : 400;
+  final durationMs = dry ? 180 : 220; // Más corto para apagar la longa
   final numSamples = (sampleRate * (durationMs / 1000.0)).round();
   final samples = List<double>.filled(numSamples, 0.0);
 
-  final freq0 = dry ? 55.0 : 65.0; // Más grave en Ansina seco
+  final freq0 = dry ? 50.0 : 60.0; // Un toque más grave y profundo
   final freq1 = freq0 * 1.5;
   final freq2 = freq0 * 2.0;
   
-  final decay = dry ? 12.0 : 10.0;
-  final volume = 0.9;
+  final decay = dry ? 25.0 : 20.0; // Caída rápida para apagar la resonancia
+  final volume = 0.65; // Más sutil comparado al palo
 
   final noiseSamples = generateWhiteNoise(numSamples);
-  final filteredNoise = lowPass(noiseSamples, 0.06);
+  final filteredNoise = lowPass(noiseSamples, 0.04); // Más suave / cálido
 
   for (int i = 0; i < numSamples; i++) {
     final t = i / sampleRate;

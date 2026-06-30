@@ -617,6 +617,7 @@ class _InstrumentRow extends StatelessWidget {
                     
                     // Dividir visualmente cada pulso (cada 4 celdas)
                     final isPulseStart = stepIndex % 4 == 0;
+                    final isAlternateBeat = (stepIndex ~/ 4) % 2 == 1;
                     
                     return Expanded(
                       child: Row(
@@ -636,6 +637,7 @@ class _InstrumentRow extends StatelessWidget {
                                 instrumentColor: instrumentColor,
                                 isMuted: instrumentPattern.isMuted,
                                 onTap: () => onCellTap(stepIndex),
+                                isAlternateBeat: isAlternateBeat,
                               ),
                             ),
                           ),
@@ -659,6 +661,7 @@ class _CellWidget extends StatelessWidget {
   final Color instrumentColor;
   final bool isMuted;
   final VoidCallback onTap;
+  final bool isAlternateBeat;
 
   const _CellWidget({
     required this.hit,
@@ -666,6 +669,7 @@ class _CellWidget extends StatelessWidget {
     required this.instrumentColor,
     required this.isMuted,
     required this.onTap,
+    required this.isAlternateBeat,
   });
 
   @override
@@ -673,9 +677,15 @@ class _CellWidget extends StatelessWidget {
     final isEmpty = hit == HitType.silencio;
     final isAccented = hit.isAccented;
 
-    // Colores basados en el golpe
-    Color cellBgColor = Colors.transparent;
-    Color borderCol = Colors.white.withOpacity(0.06);
+    // Colores basados en el golpe y en si es un pulso par/impar
+    Color cellBgColor = isEmpty
+        ? (isAlternateBeat ? Colors.white.withOpacity(0.045) : Colors.white.withOpacity(0.015))
+        : Colors.transparent;
+        
+    Color borderCol = isEmpty
+        ? (isAlternateBeat ? Colors.white.withOpacity(0.05) : Colors.white.withOpacity(0.02))
+        : Colors.white.withOpacity(0.06);
+        
     double borderWidth = 1.0;
     
     if (!isEmpty && !isMuted) {

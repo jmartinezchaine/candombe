@@ -18,9 +18,9 @@ void main() {
   writeWav(File('${outDir.path}/chico_palo$basicSuffix.wav'), generatePercussion(startFreq: 340, endFreq: 240, durationMs: 150, volume: 0.95, noiseMix: 0.28));
   
   // Repique básico (no estaba en original, generado como sweeps coherentes)
-  writeWav(File('${outDir.path}/repique_mano$basicSuffix.wav'), generatePercussion(startFreq: 180, endFreq: 140, durationMs: 160, volume: 0.7, noiseMix: 0.15));
+  writeWav(File('${outDir.path}/repique_mano$basicSuffix.wav'), generatePercussion(startFreq: 220, endFreq: 180, durationMs: 120, volume: 0.7, noiseMix: 0.15));
   writeWav(File('${outDir.path}/repique_palo$basicSuffix.wav'), generatePercussion(startFreq: 280, endFreq: 200, durationMs: 150, volume: 0.85, noiseMix: 0.25));
-  writeWav(File('${outDir.path}/repique_tapado$basicSuffix.wav'), generatePercussion(startFreq: 350, endFreq: 300, durationMs: 80, volume: 0.8, noiseMix: 0.35));
+  writeWav(File('${outDir.path}/repique_tapado$basicSuffix.wav'), generatePercussion(startFreq: 520, endFreq: 460, durationMs: 40, volume: 0.8, noiseMix: 0.45));
 
   writeWav(File('${outDir.path}/piano_mano$basicSuffix.wav'), generatePercussion(startFreq: 80, endFreq: 60, durationMs: 120, volume: 0.6, noiseMix: 0.03));
   writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 90, endFreq: 55, durationMs: 420, volume: 0.9, noiseMix: 0.10));
@@ -271,19 +271,19 @@ List<double> generateChicoPalo({required bool dry}) {
 // 3. Repique Mano (Abierto medio con cuerpo)
 List<double> generateRepiqueMano({required bool dry}) {
   const sampleRate = 44100;
-  final durationMs = dry ? 110 : 150;
+  final durationMs = dry ? 80 : 120; // Un poco más corto para que no flote
   final numSamples = (sampleRate * (durationMs / 1000.0)).round();
   final samples = List<double>.filled(numSamples, 0.0);
 
-  final freq0 = 165.0;
+  final freq0 = 195.0; // Frecuencia de mano abierta de repique un poco más definida
   final freq1 = freq0 * 1.55;
   final freq2 = freq0 * 2.3;
   
-  final decay = dry ? 40.0 : 28.0;
+  final decay = dry ? 65.0 : 45.0;
   final volume = 0.8;
 
   final noiseSamples = generateWhiteNoise(numSamples);
-  final filteredNoise = lowPass(noiseSamples, 0.2);
+  final filteredNoise = lowPass(noiseSamples, 0.18);
 
   for (int i = 0; i < numSamples; i++) {
     final t = i / sampleRate;
@@ -293,8 +293,8 @@ List<double> generateRepiqueMano({required bool dry}) {
                 sin(2 * pi * freq1 * t) * 0.2 +
                 sin(2 * pi * freq2 * t) * 0.05;
                 
-    final noiseEnv = exp(-100.0 * t);
-    final noiseComponent = filteredNoise[i] * noiseEnv * 0.12;
+    final noiseEnv = exp(-120.0 * t);
+    final noiseComponent = filteredNoise[i] * noiseEnv * 0.10;
     
     samples[i] = (osc * env + noiseComponent) * volume;
   }
@@ -335,36 +335,41 @@ List<double> generateRepiquePalo({required bool dry}) {
   return normalize(samples, volume);
 }
 
-// Repique Tapado (Slap seco y agudo amortiguado con la mano)
+// Repique Tapado (Slap seco y agudo amortiguado con la mano - Galleta)
 List<double> generateRepiqueTapado({required bool dry}) {
   const sampleRate = 44100;
-  final durationMs = dry ? 40 : 50;
+  final durationMs = dry ? 35 : 45; // Súper corto para ser una galleta seca
   final numSamples = (sampleRate * (durationMs / 1000.0)).round();
   final samples = List<double>.filled(numSamples, 0.0);
 
-  final freq0 = 420.0;
-  final freq1 = freq0 * 1.52;
-  final freq2 = freq0 * 2.38;
+  final freq0 = 520.0; // Afinación muy alta para la galleta del repique
+  final freq1 = freq0 * 1.55;
+  final freq2 = freq0 * 2.45;
   
-  final decay = dry ? 130.0 : 110.0;
-  final volume = 0.95;
+  final decay = dry ? 170.0 : 130.0; // Decay inmediato
+  final volume = 0.98; // Golpe fuerte y cortante
 
   final noiseSamples = generateWhiteNoise(numSamples);
-  final highPassedNoise = highPass(noiseSamples, 0.85);
-  final filteredNoise = lowPass(highPassedNoise, 0.6);
+  // Ruido de slap más brillante y de alta frecuencia
+  final highPassedNoise = highPass(noiseSamples, 0.75);
+  final filteredNoise = lowPass(highPassedNoise, 0.7);
 
   for (int i = 0; i < numSamples; i++) {
     final t = i / sampleRate;
     final env = exp(-decay * t);
     
-    final osc = sin(2 * pi * freq0 * t) * 0.4 +
+    final osc = sin(2 * pi * freq0 * t) * 0.45 +
                 sin(2 * pi * freq1 * t) * 0.35 +
-                sin(2 * pi * freq2 * t) * 0.25;
+                sin(2 * pi * freq2 * t) * 0.2;
                 
-    final noiseEnv = exp(-180.0 * t);
-    final noiseComponent = filteredNoise[i] * noiseEnv * 0.55;
+    // Click transitorio del impacto de la galleta (palmada rimshot)
+    final clickEnv = exp(-550.0 * t);
+    final click = sin(2 * pi * 1600.0 * t) * clickEnv * 0.5;
     
-    samples[i] = (osc * env + noiseComponent) * volume;
+    final noiseEnv = exp(-250.0 * t);
+    final noiseComponent = filteredNoise[i] * noiseEnv * 0.35;
+    
+    samples[i] = (osc * env + click + noiseComponent) * volume;
   }
   return normalize(samples, volume);
 }

@@ -23,8 +23,8 @@ void main() {
   writeWav(File('${outDir.path}/repique_tapado$basicSuffix.wav'), generatePercussion(startFreq: 350, endFreq: 300, durationMs: 80, volume: 0.8, noiseMix: 0.35));
 
   writeWav(File('${outDir.path}/piano_mano$basicSuffix.wav'), generatePercussion(startFreq: 80, endFreq: 60, durationMs: 120, volume: 0.6, noiseMix: 0.03));
-  writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 110, endFreq: 75, durationMs: 220, volume: 0.9, noiseMix: 0.18));
-  writeWav(File('${outDir.path}/piano_palo_acento$basicSuffix.wav'), generatePercussion(startFreq: 120, endFreq: 80, durationMs: 230, volume: 0.98, noiseMix: 0.20));
+  writeWav(File('${outDir.path}/piano_palo$basicSuffix.wav'), generatePercussion(startFreq: 100, endFreq: 60, durationMs: 400, volume: 0.9, noiseMix: 0.12));
+  writeWav(File('${outDir.path}/piano_palo_acento$basicSuffix.wav'), generatePercussion(startFreq: 110, endFreq: 55, durationMs: 450, volume: 0.98, noiseMix: 0.15));
   writeWav(File('${outDir.path}/piano_apagado$basicSuffix.wav'), generatePercussion(startFreq: 85, endFreq: 65, durationMs: 120, volume: 0.75, noiseMix: 0.10));
 
   // ==========================================
@@ -400,24 +400,24 @@ List<double> generatePianoMano({required bool dry}) {
   return normalize(samples, volume);
 }
 
-// Piano Palo (Golpe de palo abierto)
+// Piano Palo (Golpe de palo abierto - resonancia larga y grave)
 List<double> generatePianoPalo({required bool accented, required bool dry}) {
   const sampleRate = 44100;
-  final durationMs = accented ? (dry ? 360 : 380) : (dry ? 330 : 350);
+  final durationMs = accented ? (dry ? 500 : 650) : (dry ? 450 : 550); // Más largo para sostener la resonancia
   final numSamples = (sampleRate * (durationMs / 1000.0)).round();
   final samples = List<double>.filled(numSamples, 0.0);
 
-  final freq0 = dry ? 52.0 : 70.0; 
+  final freq0 = dry ? 50.0 : 58.0; // Frecuencias más graves y llenas
   final freq1 = freq0 * 1.5;
   final freq2 = freq0 * 2.1;
   
   final decay = dry 
-      ? (accented ? 15.0 : 18.0)
-      : (accented ? 11.0 : 14.0);
+      ? (accented ? 8.0 : 10.0) // Sostenido pero controlado para el kit seco
+      : (accented ? 4.5 : 5.5); // Sostenido largo y resonante para el kit brillante
   final volume = accented ? 0.98 : 0.78;
 
   final noiseSamples = generateWhiteNoise(numSamples);
-  final filteredNoise = lowPass(noiseSamples, accented ? 0.22 : 0.15);
+  final filteredNoise = lowPass(noiseSamples, accented ? 0.18 : 0.12);
 
   for (int i = 0; i < numSamples; i++) {
     final t = i / sampleRate;
@@ -427,11 +427,11 @@ List<double> generatePianoPalo({required bool accented, required bool dry}) {
                 sin(2 * pi * freq1 * t) * 0.15 +
                 sin(2 * pi * freq2 * t) * 0.1;
                 
-    final clickDecay = accented ? 220.0 : 250.0;
+    final clickDecay = accented ? 180.0 : 220.0;
     final clickEnv = exp(-clickDecay * t);
-    final clickFreq = accented ? 650.0 : 550.0;
-    final click = sin(2 * pi * clickFreq * t) * clickEnv * (accented ? 0.4 : 0.25);
-    final noiseComponent = filteredNoise[i] * clickEnv * (accented ? 0.2 : 0.12);
+    final clickFreq = accented ? 580.0 : 480.0; // Click de madera más gordo y bajo
+    final click = sin(2 * pi * clickFreq * t) * clickEnv * (accented ? 0.35 : 0.22);
+    final noiseComponent = filteredNoise[i] * clickEnv * (accented ? 0.15 : 0.10);
     
     samples[i] = (osc * env + click + noiseComponent) * volume;
   }
